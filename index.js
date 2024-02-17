@@ -11,10 +11,7 @@ const PORT = process.env.PORT || 3000;
 const uri = "mongodb+srv://innovo24:root@cluster0.jkhi3lx.mongodb.net/?retryWrites=true&w=majority";
 
 // Connect to MongoDB Atlas
-mongoose.connect(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+mongoose.connect(uri);
 
 const db = mongoose.connection;
 
@@ -106,6 +103,21 @@ app.post('/login', async (req, res) => {
         );
 
         res.status(200).json({ token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+app.get('/verified-counselors', async (_, res) => {
+    console.log("working on");
+    try {
+        const verifiedCounselors = await User.find({ type: 'counselor', is_verified: true });
+
+        res.status(200).json(verifiedCounselors.map(counselor => ({
+            username: counselor.username,
+            email: counselor.email,
+        })));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
