@@ -32,6 +32,12 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    description: {
+        type: String,
+        required: function() {
+            return this.type === 'counselor';
+        }
+    }
 });
 
 const User = mongoose.model('User', userSchema);
@@ -42,10 +48,10 @@ app.use(bodyParser.json());
 // Register a new user
 app.post('/register', async (req, res) => {
     try {
-        const { username, email, password, type } = req.body;
+        const { username, email, description, password, type } = req.body;
 
         // Check if all required fields are provided
-        if (!username || !email || !password || !type) {
+        if (!username || !email || !description || !password || !type) {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
 
@@ -66,6 +72,7 @@ app.post('/register', async (req, res) => {
         const newUser = new User({
             username,
             email,
+            description,
             password: hashedPassword,
             type,
         });
@@ -91,7 +98,7 @@ app.post('/login', async (req, res) => {
         }
 
         // Check if the password is correct
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -117,6 +124,7 @@ app.get('/verified-counselors', async (_, res) => {
         res.status(200).json(verifiedCounselors.map(counselor => ({
             username: counselor.username,
             email: counselor.email,
+            description: counselor.description,
         })));
     } catch (error) {
         console.error(error);
@@ -127,4 +135,3 @@ app.get('/verified-counselors', async (_, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
