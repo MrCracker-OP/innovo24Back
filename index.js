@@ -51,6 +51,8 @@ app.use(cors());
 // Register a new user
 app.post('/register', async (req, res) => {
     try {
+
+        res.send("Express on Vercel");
         const { username, email, description, password, type } = req.body;
         // console.log("got in register");
         // console.log(username, email, description, password, type);
