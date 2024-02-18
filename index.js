@@ -52,6 +52,8 @@ app.use(cors());
 app.post('/register', async (req, res) => {
     try {
         const { username, email, description, password, type } = req.body;
+        // console.log("got in register");
+        // console.log(username, email, description, password, type);
 
         // Check if all required fields are provided
         if (!username || !email || !description || !password || !type) {
@@ -120,7 +122,7 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/verified-counselors', async (_, res) => {
-    console.log("working on");
+    // console.log("working on");
     try {
         const verifiedCounselors = await User.find({ type: 'counselor', is_verified: true });
 
@@ -129,6 +131,26 @@ app.get('/verified-counselors', async (_, res) => {
             email: counselor.email,
             description: counselor.description,
         })));
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+app.get('/verified-counselors/:username', async (req, res) => {
+    try {
+        const { username } = req.params;
+        const counselor = await User.findOne({ username, type: 'counselor', is_verified: true });
+
+        if (!counselor) {
+            return res.status(404).json({ message: 'Counselor not found or not verified' });
+        }
+
+        res.status(200).json({
+            username: counselor.username,
+            email: counselor.email,
+            description: counselor.description,
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
