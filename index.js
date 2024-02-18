@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 6969;
 
 // MongoDB Atlas connection string
 const uri = "mongodb+srv://innovo24:root@cluster0.jkhi3lx.mongodb.net/?retryWrites=true&w=majority";
@@ -44,6 +45,8 @@ const User = mongoose.model('User', userSchema);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
+
 
 // Register a new user
 app.post('/register', async (req, res) => {
